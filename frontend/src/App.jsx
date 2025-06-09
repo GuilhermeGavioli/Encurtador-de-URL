@@ -1,6 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
 import { Fragment, useState } from 'react';
+import styled from 'styled-components';
+
 
 
 function App() {
@@ -53,6 +55,14 @@ function App() {
       })
       return;
     }
+    if (inputValue == 'http://' || inputValue == 'https://'){
+       setLoading(false)
+       setInputValue('')
+        setResponse((prev) => {
+        return {...prev, error: {status: true, message: 'URL Incompleta'}, data: {status: false, message: null }}
+      })
+      return;
+    }
     await fireRequest()
     setLoading(false)
             setInputValue('')
@@ -84,86 +94,204 @@ function App() {
 
 
   return (
-    <div style={{}}>
+    <div>
 
-<div style={{position: 'absolute', top: '10px', left: '10px', display: 'flex', alignItems: 'center', gap: '3px',
-  justifyContent: 'center'
-}}>
-
-      <p style={{userSelect: 'none',
+      <p style={{position: 'absolute', top: '10px', left: '10px', userSelect: 'none',
       fontSize: '1.2em',
-      color: 'rgb(225,225,225)'}}>
-
-          Guilherme Gavioli</p>
-           </div>
-
+      color: 'rgb(225,225,225)'}}>Guilherme Gavioli</p>
       <p style={{position: 'absolute', bottom: '10px', right: '10px',
       fontSize: '1.1em', userSelect: 'none', 
          color: 'rgb(205,205,205)'}}>Demo App</p>
 
-      <div style={{position: 'absolute', inset: '0 0 120px 0', margin: 'auto', height: 'fit-content',
-        width: 'fit-content', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center'
-      }}>
 
-     {/* <h1 style={{fontSize: '2.4em'}}>ENCURTADOR DE URL</h1> */}
-     {/* <h2>Guilherme Gavioli</h2> */}
-     <div style={{height: '70px',width: '100%', backgorund: 'red', padding: '10px',
-      display: 'flex'
-     }}>
-     <input id="main-input"
-     style={{height: '50px', width: '500px', padding: '10px 15px', fontSize: '1.3em',
-      border: '1px solid rgb(207, 207, 207)'
-    }} placeholder='https://google.com/search?q=automata'
+      <Container>
+
+     <SubContainer>
+     <Input id="main-input"
+      placeholder='https://google.com/search?q=automata'
     value={inputValue} 
     onChange={(e) => setInputValue(e.target.value)}
      onKeyDown={handleKeyDown}
     />
-     <button onClick={handleRequest} style={{
-       background: loading ? '#1565c0' : '#1976d2' ,  border: 'none', padding: '10px 30px',
-        height: '50px', width: '160px',color: 'white',fontSize: '1.5em',
+     <Button loading={loading} onClick={handleRequest} style={{
+    
        
       }}>
       {loading? 
       <div className='my-spinner'></div>
       :
-        <Fragment>
+        <p style={{display: 'flex',justifyContent: 'center', width: 'fit-content'}}>
         Encurtar
-        </Fragment>
+        </p>
         }
-      </button>
+      </Button>
 
-     </div>
+     </SubContainer>
 
-        <div style={{display: 'flex', justifyContent: 'center', marginTop: '10px', alignItems: 'center', background: 'yellow',
-  
-         }}>
+        <ResultContainer>
           {
             response.data.status && 
-            <>
-                <p style={{fontSize: '1.5em',  padding: '8px 15px'}}>{response.data.message}
+            <DataMessageContainer>
+                <DataMessage>{response.data.message}
 
-        </p>
+        </DataMessage>
         {
           copied ?
           <p style={{marginRight: '15px'}}>copied!</p>
           :
           <img onClick={handleCopy} src="/copy-link.png" style={{width: '26px', height: '26px', marginRight: '15px'}} alt="" />
         }
-            </>
+            </DataMessageContainer>
           }
  
  {
 response.error.status && 
-  <p style={{userSelect: 'none', fontSize: '1.5em',  background: 'yellow', padding: '8px 15px'}}>{response.error.message}</p>
+  <ErrorText>{response.error.message}</ErrorText>
 
 }
-     </div>
+     </ResultContainer>
    
 
-      </div>
+      </Container>
     </div>
   );
 }
 
 export default App;
+
+
+const Container = styled.div`
+position: absolute; inset: 0 0 120px 0; margin: auto; height: fit-content;
+        width: fit-content; display: flex; flex-direction: column;
+        alignItems: center; justifyContent: center;
+
+
+          @media (min-width: 768px) {
+
+  }
+`
+
+const SubContainer = styled.div`
+height: 70px;width: 100%; padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      @media (min-width: 768px) {
+        flex-direction: row;
+  }
+      `
+
+const Button = styled.div`
+   background: ${(props) => props.loading ? '#1565c0' : '#1976d2'};  border: none; padding: 10px 30px;
+        height: 50px; 
+        color: white; font-size: 1.5em;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        @media (min-width: 768px) {
+          width: 160px;
+  }
+`
+
+const Input = styled.input`
+height: 50px;  padding: 10px 15px; 
+      border: 1px solid rgb(207, 207, 207);
+
+      width: 260px;
+      font-size: 1.1em;
+           @media (min-width: 375px) {
+           width: 300px;
+           font-size: 1.3em;
+  }
+
+           @media (min-width: 585px) {
+           width: 500px;
+           font-size: 1.3em;
+  }
+`
+
+const ResultContainer = styled.div`
+background: yellow;
+  margin-top: 50px; 
+  padding: 0, margin: 0;
+  max-width: 280px;
+  width: 100%;
+           @media (min-width: 375px) {
+             margin-top: 50px; 
+             display: flex; justify-content: center; align-items: center; 
+               max-width: 320px;
+  }
+
+           @media (min-width: 585px) {
+         margin-top: 50px; 
+         display: flex; justify-content: center; align-items: center; 
+                max-width: 520px;
+         }
+         @media (min-width: 768px) {
+          margin-top: 10px; 
+          display: flex; justify-content: center; align-items: center; 
+           max-width: 100%;
+  }
+`
+
+
+const ErrorText = styled.p`
+user-select: none; font-size: 1.1em;  background: yellow; 
+width: 100%;
+          padding: 8px 15px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  text-align: center;
+     @media (min-width: 375px) {
+             font-size: 1.5em;
+             padding: 8px 15px;
+             max-width: 300px;
+             }
+             
+             @media (min-width: 585px) {
+              font-size: 1.5em;
+              padding: 8px 15px;
+              max-width: 600px;
+              }
+              @media (min-width: 768px) {
+                font-size: 1.5em;
+                padding: 8px 15px;
+                max-width: unset;
+  }
+`
+
+const DataMessageContainer = styled.div`
+display: flex;
+align-items: center;
+`
+
+const DataMessage = styled.p`
+user-select: none; font-size: 1em;  background: yellow; 
+width: 100%;
+
+          padding: 8px 15px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  text-align: start;
+  display: flex;
+     @media (min-width: 375px) {
+             font-size: 1.2em;
+             padding: 8px 15px;
+             max-width: 300px;
+             }
+             
+             @media (min-width: 585px) {
+              font-size: 1.5em;
+              padding: 8px 15px;
+              max-width: 600px;
+              }
+              @media (min-width: 768px) {
+                font-size: 1.5em;
+                padding: 8px 15px;
+                max-width: unset;
+  }
+`
