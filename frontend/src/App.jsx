@@ -43,6 +43,7 @@ function App() {
         setResponse((prev) => {
         return {...prev, error: {status: true, message: 'Campo de URL Vazio'}, data: {status: false, message: null }}
       })
+      return;
     }
     if (!inputValue.startsWith('http://') && !inputValue.startsWith('https://')){
        setLoading(false)
@@ -50,6 +51,7 @@ function App() {
         setResponse((prev) => {
         return {...prev, error: {status: true, message: 'URL Malformatada'}, data: {status: false, message: null }}
       })
+      return;
     }
     await fireRequest()
     setLoading(false)

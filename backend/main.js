@@ -1,32 +1,40 @@
-const express = require('express')
+const express = require('express');
 const bodyParser = require('body-parser');
-const dotenv = require('dotenv').config()
-const cors = require('cors')
-const app = express()
+const dotenv = require('dotenv').config();
+const cors = require('cors');
+const app = express();
 const Redis = require('ioredis');
-
 
 const redis = new Redis({
   host: process.env.REDIS_HOST,
   port: process.env.REDIS_PORT
 });
 
-// const https = require('https');
-// const fs = require('fs')
-// const options = {
-//   key: fs.readFileSync(`/etc/letsencrypt/live/${process.env.DOMAIN}/privkey.pem`),
-//   cert: fs.readFileSync(`/etc/letsencrypt/live/${process.env.DOMAIN}/fullchain.pem`)
-// };
+const https = require('https');
+const fs = require('fs');
+
+let c,k;
+try{
+  k = fs.readFileSync(`/etc/letsencrypt/live/${process.env.DOMAIN}/privkey.pem`)
+  c = fs.readFileSync(`/etc/letsencrypt/live/${process.env.DOMAIN}/fullchain.pem`)
+} catch(err){
+  console.log(err)
+}
+const options = {
+  key: k,
+  cert: c
+};
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(cors({
   origin: process.env.ALLOWED_ORIGIN,
-  // credentials: true
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
 }));
 
-app.get('/health', (req,res)=> {
+app.get('/health/health', (req,res)=> {
     res.send('ok')
 })
 
@@ -91,8 +99,6 @@ app.post('/shorturl', async (req,res)=> {
     } else {
       return res.status(400).json({ error: "Erro inesperado. Tente novamente." });
     }
- 
-
 })
 
 app.get('/:short', async (req,res) => {
@@ -112,8 +118,7 @@ app.get('/:short', async (req,res) => {
     }
 })
 
-app.listen(process.env.WEB_PORT, () => {console.log('upon80')})
-
-// https.createServer(options, app).listen(process.env.PORT, () => {
-//   console.log('UpOn443');
-// });
+// app.listen(process.env.WEB_PORT, () => {console.log('upon80')})
+https.createServer(options, app).listen(process.env.WEB_PORT, () => {
+  console.log('UpOn443');
+});
