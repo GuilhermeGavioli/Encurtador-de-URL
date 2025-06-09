@@ -9,6 +9,11 @@ https://encurtadordeurl.vercel.app/
 </br>
 </br>
 
+<h1>Sobre o Identificador</h1>
+https://guilhermegavioli.xyz/XXXX
+X = a-z/A-Z/0-9 (62 possibilidades por digito)
+62^4= permite 14.776.336 URLs encurtadas.
+
 Ferramentas, Protocolos & Plataformas.
 - DNS
 - IPv4
@@ -20,3 +25,4 @@ Ferramentas, Protocolos & Plataformas.
 - ReactJs
 - Vercel
 - DigitalOcean
+
